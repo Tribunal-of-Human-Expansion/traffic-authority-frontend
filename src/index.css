@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Courier+Prime:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background: #0a0b0d;
+  color: #c8d6e5;
+  font-family: 'Barlow Condensed', sans-serif;
+  overflow-x: hidden;
+  cursor: crosshair;
+  line-height: 1.5;
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 136, 0.025) 2px,
+      rgba(0, 255, 136, 0.025) 4px);
+  pointer-events: none;
+  z-index: 9999;
+  animation: scanMove 8s linear infinite;
+}
+
+@keyframes scanMove {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 0 100px;
+  }
+}
+
+@keyframes scanH {
+
+  0%,
+  100% {
+    transform: scaleX(0.3);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes crestPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(192, 57, 43, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 12px 4px rgba(192, 57, 43, 0.15), inset 0 0 8px rgba(192, 57, 43, 0.1);
+  }
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes dotPulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.6);
+  }
+
+  50% {
+    box-shadow: 0 0 0 5px rgba(0, 255, 136, 0);
+  }
+}
+
+@keyframes ambPulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes redFlash {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes shimmer {
+
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes permitFlash {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes tickerScroll {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes glow {
+
+  0%,
+  100% {
+    text-shadow: 0 0 5px rgba(0, 255, 136, 0.5);
+  }
+
+  50% {
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.8);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0b0d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a3340;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a4350;
+}
+
+input {
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-traffic-red border border-traffic-red2 text-traffic-white font-mono text-xs uppercase tracking-wider transition-all duration-200 hover: bg-traffic-red2 hover:shadow-lg;
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 border border-traffic-text3 text-traffic-text2 font-mono text-xs uppercase tracking-wider transition-all duration-200 hover: border-traffic-text2 hover:text-traffic-text;
+  }
+
+  .btn-danger {
+    @apply px-4 py-2 bg-traffic-red border border-traffic-red2 text-traffic-white font-mono text-xs uppercase tracking-wider transition-all duration-200 hover: bg-traffic-red2 hover:shadow-lg;
+  }
+
+  .health-dot {
+    @apply inline-block w-2 h-2 rounded-full flex-shrink-0;
+  }
+
+  .health-dot-green {
+    @apply bg-traffic-green shadow-[0_0_6px_#00ff88];
+  }
+
+  .health-dot-amber {
+    @apply bg-traffic-amber2 shadow-[0_0_6px_#f39c12] animate-amb-pulse;
+  }
+
+  .health-dot-red {
+    @apply bg-traffic-red2 shadow-[0_0_6px_#e74c3c] animate-red-flash;
+  }
+
+  .panel-card {
+    @apply bg-traffic-panel border border-traffic-border p-5;
+  }
+
+  .stat-card {
+    @apply relative overflow-hidden bg-traffic-panel border border-traffic-border p-4;
+  }
+
+  .stat-card::before {
+    @apply absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-traffic-green to-transparent;
+    content: '';
+  }
+
+  .permit-card {
+    @apply bg-traffic-panel border-l-4 border-traffic-border p-4 mb-3 hover: border-traffic-red transition-colors;
+  }
+
+  .mono-text {
+    @apply font-mono text-traffic-text2;
+  }
+
+  .section-title {
+    @apply font-barlow text-xs uppercase tracking-widest text-traffic-text3 mb-4;
+  }
+}
