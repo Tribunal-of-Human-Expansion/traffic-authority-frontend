@@ -19,7 +19,7 @@ function App() {
   useMockData();
 
   return (
-    <div className="bg-traffic-bg text-traffic-text min-h-screen w-screen cursor-crosshair overflow-hidden">
+    <div className="bg-traffic-bg text-traffic-text min-h-screen w-screen cursor-crosshair overflow-x-hidden">
       {/* Scanlines effect */}
       <div
         className="fixed inset-0 pointer-events-none z-50"
@@ -36,7 +36,10 @@ function App() {
       <Ticker />
 
       {/* Main Grid Layout - 3 columns × 2 rows */}
-      <div className="grid grid-cols-[260px_1fr_280px] grid-rows-[1fr_auto] gap-0" style={{ height: 'calc(100vh - 120px)' }}>
+      <div
+        className="grid grid-cols-[260px_1fr_280px] grid-rows-[1fr_auto] gap-0"
+        style={{ minHeight: 'calc(100vh - 86px)' }}
+      >
         {/* Sidebar - row 1, col 1 */}
         <div className="overflow-hidden row-start-1 col-start-1">
           <Sidebar healthCheckpoints={healthCheckpoints} />

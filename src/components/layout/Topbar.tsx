@@ -1,6 +1,6 @@
 export function Topbar() {
     return (
-        <div className="flex items-center justify-between px-8 h-16 bg-traffic-panel border-b border-traffic-border relative overflow-hidden">
+        <div className="flex items-center justify-between px-8 h-[52px] bg-traffic-panel border-b border-traffic-border relative overflow-hidden">
             {/* Animated top border */}
             <div
                 className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-traffic-red to-transparent"
