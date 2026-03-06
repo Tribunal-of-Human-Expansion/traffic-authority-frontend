@@ -35,7 +35,7 @@ export function Ticker() {
     };
 
     return (
-        <div className="border-t border-b border-traffic-border py-2 px-0 bg-opacity-20 bg-traffic-bg overflow-hidden">
+        <div className="border-t border-b border-traffic-border py-2 px-0 bg-traffic-bg/20 overflow-hidden">
             <div
                 ref={tickerRef}
                 className="flex gap-10 animate-tickerScroll whitespace-nowrap"

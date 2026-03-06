@@ -1,8 +1,6 @@
+@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Courier+Prime:wght@400;700&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@config "../tailwind.config.ts";
 
 * {
   margin: 0;
@@ -203,55 +201,139 @@ button {
 
 @layer components {
   .btn-primary {
-    @apply px-4 py-2 bg-traffic-red border border-traffic-red2 text-traffic-white font-mono text-xs uppercase tracking-wider transition-all duration-200 hover: bg-traffic-red2 hover:shadow-lg;
+    padding: 0.75rem 1.5rem;
+    background-color: #c0392b;
+    border: none;
+    color: #ffffff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1875rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 200ms;
+  }
+
+  .btn-primary:hover {
+    background-color: #e74c3c;
+    box-shadow: 0 0 20px rgba(192, 57, 43, 0.4);
+  }
+
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
+    transform: translateX(-100%);
+    transition: transform 0.4s;
+  }
+
+  .btn-primary:hover::after {
+    transform: translateX(100%);
   }
 
   .btn-ghost {
-    @apply px-4 py-2 border border-traffic-text3 text-traffic-text2 font-mono text-xs uppercase tracking-wider transition-all duration-200 hover: border-traffic-text2 hover:text-traffic-text;
+    background: transparent;
+    color: #8899aa;
+    border: 1px solid #2a3340;
+    padding: 0.5rem 1.125rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.125rem;
+    cursor: pointer;
+    transition: all 200ms;
   }
 
-  .btn-danger {
-    @apply px-4 py-2 bg-traffic-red border border-traffic-red2 text-traffic-white font-mono text-xs uppercase tracking-wider transition-all duration-200 hover: bg-traffic-red2 hover:shadow-lg;
+  .btn-ghost:hover {
+    border-color: #8899aa;
+    color: #eef2f7;
+  }
+
+  .btn-ghost.danger {
+    color: #e74c3c;
+    border-color: rgba(231, 76, 60, 0.4);
+  }
+
+  .btn-ghost.danger:hover {
+    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.05);
   }
 
   .health-dot {
-    @apply inline-block w-2 h-2 rounded-full flex-shrink-0;
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    flex-shrink: 0;
   }
 
   .health-dot-green {
-    @apply bg-traffic-green shadow-[0_0_6px_#00ff88];
+    background-color: #00ff88;
+    box-shadow: 0 0 6px #00ff88;
   }
 
   .health-dot-amber {
-    @apply bg-traffic-amber2 shadow-[0_0_6px_#f39c12] animate-amb-pulse;
+    background-color: #f39c12;
+    box-shadow: 0 0 6px #f39c12;
+    animation: ambPulse 1s ease-in-out infinite;
   }
 
   .health-dot-red {
-    @apply bg-traffic-red2 shadow-[0_0_6px_#e74c3c] animate-red-flash;
+    background-color: #e74c3c;
+    box-shadow: 0 0 6px #e74c3c;
+    animation: redFlash 0.8s ease-in-out infinite;
   }
 
   .panel-card {
-    @apply bg-traffic-panel border border-traffic-border p-5;
+    background-color: #111418;
+    border: 1px solid #1e2530;
+    padding: 1.25rem;
   }
 
   .stat-card {
-    @apply relative overflow-hidden bg-traffic-panel border border-traffic-border p-4;
+    position: relative;
+    overflow: hidden;
+    background-color: #111418;
+    border: 1px solid #1e2530;
+    padding: 1rem;
   }
 
   .stat-card::before {
-    @apply absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-traffic-green to-transparent;
     content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0.125rem;
+    background: linear-gradient(90deg, transparent, #00ff88, transparent);
   }
 
   .permit-card {
-    @apply bg-traffic-panel border-l-4 border-traffic-border p-4 mb-3 hover: border-traffic-red transition-colors;
+    background-color: #111418;
+    border-left: 4px solid #1e2530;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: border-color 150ms;
+  }
+
+  .permit-card:hover {
+    border-left-color: #c0392b;
   }
 
   .mono-text {
-    @apply font-mono text-traffic-text2;
+    font-family: 'Share Tech Mono', monospace;
+    color: #8899aa;
   }
 
   .section-title {
-    @apply font-barlow text-xs uppercase tracking-widest text-traffic-text3 mb-4;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #556677;
+    margin-bottom: 1rem;
   }
 }

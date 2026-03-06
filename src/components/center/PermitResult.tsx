@@ -8,9 +8,9 @@ interface PermitResultProps {
 export function PermitResult({ status }: PermitResultProps) {
     if (status === 'approved') {
         return (
-            <div className="border border-traffic-green bg-opacity-3 bg-traffic-green p-5 relative overflow-hidden">
+            <div className="border border-traffic-green bg-traffic-green/3 p-5 relative overflow-hidden">
                 <div
-                    className="absolute inset-0 bg-gradient-to-br from-opacity-5 to-transparent pointer-events-none"
+                    className="absolute inset-0 pointer-events-none"
                     style={{
                         background: 'linear-gradient(135deg, rgba(0,255,136,0.05) 0%, transparent 50%)',
                     }}
@@ -72,7 +72,7 @@ export function PermitResult({ status }: PermitResultProps) {
     }
 
     return (
-        <div className="border border-traffic-red-2 bg-opacity-3 bg-traffic-red-2 p-5 relative overflow-hidden">
+        <div className="border border-traffic-red-2 bg-traffic-red-2/3 p-5 relative overflow-hidden">
             <div
                 className="absolute inset-0 pointer-events-none"
                 style={{

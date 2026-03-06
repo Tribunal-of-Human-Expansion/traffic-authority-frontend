@@ -1,4 +1,5 @@
-/** @type {import('tailwindcss').Config} */
+import type { Config } from 'tailwindcss';
+
 export default {
     content: [
         "./index.html",
@@ -32,6 +33,19 @@ export default {
                 mono: ['Share Tech Mono', 'monospace'],
                 barlow: ['Barlow Condensed', 'sans-serif'],
                 courier: ['Courier Prime', 'monospace'],
+            },
+            boxShadow: {
+                glow: '0 0 10px rgba(0,255,136,0.4)',
+                'green-glow': '0 0 10px rgba(0,255,136,0.4)',
+                'red-glow': '0 0 10px rgba(231,76,60,0.4)',
+                'amb-glow': '0 0 10px rgba(243,156,18,0.4)',
+                'blue-glow': '0 0 10px rgba(79,195,247,0.4)',
+            },
+            opacity: {
+                '3': '0.03',
+                '4': '0.04',
+                '5': '0.05',
+                '8': '0.08',
             },
             animation: {
                 scanMove: 'scanMove 8s linear infinite',
@@ -90,4 +104,4 @@ export default {
         },
     },
     plugins: [],
-}
+} satisfies Config;

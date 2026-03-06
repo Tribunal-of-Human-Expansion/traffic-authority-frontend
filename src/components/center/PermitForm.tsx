@@ -67,23 +67,23 @@ export function PermitForm({ request }: PermitFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                    <div className="flex items-center gap-2.5 font-mono text-xs text-traffic-text-2 px-3 py-2 bg-opacity-30 bg-traffic-bg border border-traffic-border">
+                    <div className="flex items-center gap-2.5 font-mono text-xs text-traffic-text-2 px-3 py-2 bg-traffic-bg/30 border border-traffic-border">
                         <span className="text-traffic-green">✓</span>
                         <span>Corridor capacity available (68%)</span>
                     </div>
-                    <div className="flex items-center gap-2.5 font-mono text-xs text-traffic-text-2 px-3 py-2 bg-opacity-30 bg-traffic-bg border border-traffic-border">
+                    <div className="flex items-center gap-2.5 font-mono text-xs text-traffic-text-2 px-3 py-2 bg-traffic-bg/30 border border-traffic-border">
                         <span className="text-traffic-green">✓</span>
                         <span>No conflicting reservations</span>
                     </div>
-                    <div className="flex items-center gap-2.5 font-mono text-xs text-traffic-text-2 px-3 py-2 bg-opacity-30 bg-traffic-bg border border-traffic-border">
+                    <div className="flex items-center gap-2.5 font-mono text-xs text-traffic-text-2 px-3 py-2 bg-traffic-bg/30 border border-traffic-border">
                         <span className="text-traffic-amber-2">⚠</span>
                         <span>Peak-hour surcharge applies</span>
                     </div>
-                    <div className="flex items-center gap-2.5 font-mono text-xs text-traffic-text-2 px-3 py-2 bg-opacity-30 bg-traffic-bg border border-traffic-border">
+                    <div className="flex items-center gap-2.5 font-mono text-xs text-traffic-text-2 px-3 py-2 bg-traffic-bg/30 border border-traffic-border">
                         <span className="text-traffic-green">✓</span>
                         <span>Citizen clearance sufficient</span>
                     </div>
-                    <div className="flex items-center gap-2.5 font-mono text-xs text-traffic-text-2 px-3 py-2 bg-opacity-30 bg-traffic-bg border border-traffic-border">
+                    <div className="flex items-center gap-2.5 font-mono text-xs text-traffic-text-2 px-3 py-2 bg-traffic-bg/30 border border-traffic-border">
                         <span className="text-traffic-amber-2">⚠</span>
                         <span>EU-WEST gateway degraded — possible delay</span>
                     </div>

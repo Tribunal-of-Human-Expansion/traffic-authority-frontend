@@ -32,8 +32,8 @@ export function Sidebar({ healthCheckpoints }: SidebarProps) {
                         className={cn(
                             'flex items-center gap-3 px-5 py-2.5 cursor-pointer transition-all duration-150 font-barlow font-semibold text-xs uppercase tracking-wider relative',
                             activeNav === item.key
-                                ? 'text-traffic-green bg-opacity-5 bg-traffic-green'
-                                : 'text-traffic-text-2 hover:bg-opacity-4 hover:bg-traffic-text'
+                                ? 'text-traffic-green bg-traffic-green/5'
+                                : 'text-traffic-text-2 hover:bg-traffic-text/4'
                         )}
                     >
                         {activeNav === item.key && (
