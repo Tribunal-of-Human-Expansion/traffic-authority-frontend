@@ -1,5 +1,6 @@
 import { useUIStore } from '../../store/ui';
 import { HealthDot } from '../common/HealthDot';
+import { useAuth } from '../../context/AuthContext';
 import type { HealthCheckpoint } from '../../types/index';
 import { cn } from '../../utils/cn';
 
@@ -9,14 +10,23 @@ interface SidebarProps {
 
 export function Sidebar({ healthCheckpoints }: SidebarProps) {
     const { activeNav, setActiveNav, failures, setFailureSimulator } = useUIStore();
+    const { isAdmin, isCivilian } = useAuth();
 
-    const navItems = [
+    const adminNavItems = [
         { key: 'command-center' as const, label: 'Command Center' },
         { key: 'request-passage' as const, label: 'Request Passage' },
         { key: 'my-permits' as const, label: 'My Permits' },
         { key: 'traffic-map' as const, label: 'Traffic Map' },
         { key: 'enforcement' as const, label: 'Enforcement' },
     ];
+
+    const civilianNavItems = [
+        { key: 'my-permits' as const, label: 'My Permits' },
+        { key: 'request-passage' as const, label: 'Request Passage' },
+        { key: 'traffic-map' as const, label: 'Traffic Map' },
+    ];
+
+    const navItems = isAdmin ? adminNavItems : civilianNavItems;
 
     return (
         <div className="bg-traffic-panel border-r border-traffic-border w-64 pt-6 flex flex-col">
@@ -78,48 +88,50 @@ export function Sidebar({ healthCheckpoints }: SidebarProps) {
                 </div>
             </div>
 
-            {/* Failure Simulator Section */}
-            <div className="pb-4">
-                <div className="font-mono text-xs text-traffic-text-3 uppercase tracking-widest px-5 pb-3">
-                    Failure Simulator
-                </div>
-                <div className="px-5 space-y-2">
-                    {[
-                        { key: 'dropNotifications', label: 'Drop Notifications' },
-                        { key: 'euWestDown', label: 'EU-WEST Down' },
-                        { key: 'injectLatency', label: 'Inject 2s Latency' },
-                        { key: 'apSPartition', label: 'AP-S Partition' },
-                        { key: 'forceStaleCache', label: 'Force Stale Cache' },
-                    ].map((item) => (
-                        <div key={item.key} className="flex items-center justify-between">
-                            <div className="font-mono text-xs text-traffic-text-2">{item.label}</div>
-                            <button
-                                onClick={() =>
-                                    setFailureSimulator(
-                                        item.key as keyof typeof failures,
-                                        !failures[item.key as keyof typeof failures]
-                                    )
-                                }
-                                className={cn(
-                                    'w-8 h-4 rounded-full relative cursor-pointer transition-all duration-200',
-                                    failures[item.key as keyof typeof failures]
-                                        ? 'bg-traffic-red'
-                                        : 'bg-traffic-border-2'
-                                )}
-                            >
-                                <div
+            {/* Failure Simulator Section - Admin Only */}
+            {isAdmin && (
+                <div className="pb-4">
+                    <div className="font-mono text-xs text-traffic-text-3 uppercase tracking-widest px-5 pb-3">
+                        Failure Simulator
+                    </div>
+                    <div className="px-5 space-y-2">
+                        {[
+                            { key: 'dropNotifications', label: 'Drop Notifications' },
+                            { key: 'euWestDown', label: 'EU-WEST Down' },
+                            { key: 'injectLatency', label: 'Inject 2s Latency' },
+                            { key: 'apSPartition', label: 'AP-S Partition' },
+                            { key: 'forceStaleCache', label: 'Force Stale Cache' },
+                        ].map((item) => (
+                            <div key={item.key} className="flex items-center justify-between">
+                                <div className="font-mono text-xs text-traffic-text-2">{item.label}</div>
+                                <button
+                                    onClick={() =>
+                                        setFailureSimulator(
+                                            item.key as keyof typeof failures,
+                                            !failures[item.key as keyof typeof failures]
+                                        )
+                                    }
                                     className={cn(
-                                        'w-3 h-3 rounded-full bg-white absolute top-0.5 transition-transform duration-200',
+                                        'w-8 h-4 rounded-full relative cursor-pointer transition-all duration-200',
                                         failures[item.key as keyof typeof failures]
-                                            ? 'translate-x-4 left-0'
-                                            : 'left-0.5'
+                                            ? 'bg-traffic-red'
+                                            : 'bg-traffic-border-2'
                                     )}
-                                />
-                            </button>
-                        </div>
-                    ))}
+                                >
+                                    <div
+                                        className={cn(
+                                            'w-3 h-3 rounded-full bg-white absolute top-0.5 transition-transform duration-200',
+                                            failures[item.key as keyof typeof failures]
+                                                ? 'translate-x-4 left-0'
+                                                : 'left-0.5'
+                                        )}
+                                    />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

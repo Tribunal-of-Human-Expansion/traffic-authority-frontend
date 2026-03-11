@@ -6,6 +6,7 @@ import { AuditTrail } from './AuditTrail';
 import { JourneyRequest } from './JourneyRequest';
 import type { PermitItem, AuditTrailEvent, UserPermitRequest } from '../../types/index';
 import { mockStats } from '../../utils/mockData';
+import { useAuth } from '../../context/AuthContext';
 
 interface CenterProps {
     permits: PermitItem[];
@@ -20,6 +21,8 @@ export function Center({
     currentRequest,
     onPermitClick,
 }: CenterProps) {
+    const { isCivilian, isAdmin } = useAuth();
+
     return (
         <div className="bg-traffic-bg-2 px-8 py-7 overflow-y-auto">
             <Broadcast />
@@ -28,35 +31,46 @@ export function Center({
             <div className="flex items-start justify-between mb-7">
                 <div>
                     <div className="font-barlow font-black text-2xl uppercase tracking-wider text-traffic-white">
-                        Command Center
+                        {isCivilian ? 'Permit Request' : 'Command Center'}
                     </div>
                     <div className="font-mono text-xs text-traffic-text-3 uppercase tracking-widest mt-1.5">
-            // Sector 7 · Movement Authorization Dashboard
+                        {isCivilian ? '// Submit journey authorization requests' : '// Sector 7 · Movement Authorization Dashboard'}
                     </div>
                 </div>
-                <Button variant="primary">+ Request Passage</Button>
+                {isAdmin && <Button variant="primary">+ Request Passage</Button>}
             </div>
 
-            {/* Stats Row */}
-            <StatsRow
-                permitsGranted={mockStats.permitsGranted}
-                permitsGrantedDelta={mockStats.permitsGrantedDelta}
-                permitsDenied={mockStats.permitsDenied}
-                permitsDeniedDelta={mockStats.permitsDeniedDelta}
-                pendingConsensus={mockStats.pendingConsensus}
-                pendingConsensusDelta={mockStats.pendingConsensusDelta}
-                globalCongestion={mockStats.globalCongestion}
-                globalCongestionDelta={mockStats.globalCongestionDelta}
-            />
+            {/* Stats Row - Admin only */}
+            {isAdmin && (
+                <StatsRow
+                    permitsGranted={mockStats.permitsGranted}
+                    permitsGrantedDelta={mockStats.permitsGrantedDelta}
+                    permitsDenied={mockStats.permitsDenied}
+                    permitsDeniedDelta={mockStats.permitsDeniedDelta}
+                    pendingConsensus={mockStats.pendingConsensus}
+                    pendingConsensusDelta={mockStats.pendingConsensusDelta}
+                    globalCongestion={mockStats.globalCongestion}
+                    globalCongestionDelta={mockStats.globalCongestionDelta}
+                />
+            )}
 
             {/* Content Grid */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-                <ActivePermits permits={permits} onPermitClick={onPermitClick} />
-                <AuditTrail events={auditTrail} />
-            </div>
+            {isCivilian ? (
+                // Civilian: Show permits in full width with form below
+                <div className="space-y-4">
+                    <ActivePermits permits={permits} onPermitClick={onPermitClick} />
+                    <JourneyRequest request={currentRequest} />
+                </div>
+            ) : (
+                // Admin: Show permits and audit trail side by side
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                    <ActivePermits permits={permits} onPermitClick={onPermitClick} />
+                    <AuditTrail events={auditTrail} />
+                </div>
+            )}
 
-            {/* Journey Request Form */}
-            <JourneyRequest request={currentRequest} />
+            {/* Journey Request Form - Admin only */}
+            {isAdmin && <JourneyRequest request={currentRequest} />}
         </div>
     );
 }
