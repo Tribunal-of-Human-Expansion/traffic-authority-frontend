@@ -1,4 +1,8 @@
+import { useAuth } from '../../context/AuthContext';
+
 export function Topbar() {
+    const auth = useAuth();
+
     return (
         <div className="flex items-center justify-between px-8 h-[52px] bg-traffic-panel border-b border-traffic-border relative overflow-hidden">
             {/* Animated top border */}
@@ -31,12 +35,34 @@ export function Topbar() {
 
             {/* Right Section */}
             <div className="flex items-center gap-4">
-                <div className="font-mono text-xs text-traffic-text-2 uppercase tracking-wide">
-                    CIT-0049271-B
-                </div>
-                <div className="px-2.5 py-0.5 border border-traffic-blue font-mono text-xs text-traffic-blue uppercase tracking-widest">
-                    Civilian
-                </div>
+                {auth.isLoggedIn ? (
+                    <>
+                        <div className="font-mono text-xs text-traffic-text-2 uppercase tracking-wide">
+                            {auth.username}
+                        </div>
+                        <div className={`px-2.5 py-0.5 border font-mono text-xs uppercase tracking-widest ${auth.isAdmin ? 'border-traffic-red text-traffic-red' : 'border-traffic-blue text-traffic-blue'
+                            }`}>
+                            {auth.userRole}
+                        </div>
+                        <button
+                            onClick={auth.toggleTestRole}
+                            className="text-xs bg-traffic-accent/20 border border-traffic-accent px-2 py-1 rounded hover:bg-traffic-accent/40 transition-colors text-traffic-accent"
+                            title="Toggle role for testing"
+                        >
+                            Toggle
+                        </button>
+                        <button
+                            onClick={auth.logout}
+                            className="text-xs bg-traffic-red/20 border border-traffic-red px-2 py-1 rounded hover:bg-traffic-red/40 transition-colors text-traffic-red"
+                        >
+                            Logout
+                        </button>
+                    </>
+                ) : (
+                    <div className="font-mono text-xs text-traffic-text-2 uppercase tracking-wide">
+                        Not logged in
+                    </div>
+                )}
             </div>
         </div>
     );
