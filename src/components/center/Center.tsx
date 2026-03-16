@@ -1,12 +1,13 @@
-import { Button } from '../common/Button';
 import { Broadcast } from './Broadcast';
-import { StatsRow } from './StatsRow';
 import { ActivePermits } from './ActivePermits';
 import { AuditTrail } from './AuditTrail';
-import { JourneyRequest } from './JourneyRequest';
+import { BookingJourneyForm } from './BookingJourneyForm';
+import { BookingStatus } from './BookingStatus';
+import { AuthorityDashboard } from '../authority/AuthorityDashboard';
 import type { PermitItem, AuditTrailEvent, UserPermitRequest } from '../../types/index';
-import { mockStats } from '../../utils/mockData';
 import { useAuth } from '../../context/AuthContext';
+import { useBookingStore } from '../../store/booking';
+import { useUIStore } from '../../store/ui';
 
 interface CenterProps {
     permits: PermitItem[];
@@ -22,55 +23,62 @@ export function Center({
     onPermitClick,
 }: CenterProps) {
     const { isCivilian, isAdmin } = useAuth();
+    const { currentBooking } = useBookingStore();
+    const { activeNav } = useUIStore();
 
     return (
-        <div className="bg-traffic-bg-2 px-8 py-7 overflow-y-auto">
-            <Broadcast />
-
-            {/* Page Header */}
-            <div className="flex items-start justify-between mb-7">
-                <div>
-                    <div className="font-barlow font-black text-2xl uppercase tracking-wider text-traffic-white">
-                        {isCivilian ? 'Permit Request' : 'Command Center'}
-                    </div>
-                    <div className="font-mono text-xs text-traffic-text-3 uppercase tracking-widest mt-1.5">
-                        {isCivilian ? '// Submit journey authorization requests' : '// Sector 7 · Movement Authorization Dashboard'}
-                    </div>
-                </div>
-                {isAdmin && <Button variant="primary">+ Request Passage</Button>}
-            </div>
-
-            {/* Stats Row - Admin only */}
-            {isAdmin && (
-                <StatsRow
-                    permitsGranted={mockStats.permitsGranted}
-                    permitsGrantedDelta={mockStats.permitsGrantedDelta}
-                    permitsDenied={mockStats.permitsDenied}
-                    permitsDeniedDelta={mockStats.permitsDeniedDelta}
-                    pendingConsensus={mockStats.pendingConsensus}
-                    pendingConsensusDelta={mockStats.pendingConsensusDelta}
-                    globalCongestion={mockStats.globalCongestion}
-                    globalCongestionDelta={mockStats.globalCongestionDelta}
-                />
-            )}
-
-            {/* Content Grid */}
+        <div className="bg-traffic-bg-2 overflow-y-auto h-full">
             {isCivilian ? (
-                // Civilian: Show permits in full width with form below
-                <div className="space-y-4">
-                    <ActivePermits permits={permits} onPermitClick={onPermitClick} />
-                    <JourneyRequest request={currentRequest} />
+                // CIVILIAN VIEW - Role-based tab navigation
+                <div className="px-8 py-7">
+                    <Broadcast />
+
+                    {activeNav === 'my-permits' ? (
+                        // MY PERMITS TAB: Show permits + audit trail
+                        <>
+                            <div className="flex items-start justify-between mb-7">
+                                <div>
+                                    <div className="font-barlow font-black text-2xl uppercase tracking-wider text-traffic-white">
+                                        My Permits
+                                    </div>
+                                    <div className="font-mono text-xs text-traffic-text-3 uppercase tracking-widest mt-1.5">
+                                        // View your active permits and transaction history
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6">
+                                <ActivePermits permits={permits} onPermitClick={onPermitClick} />
+                                <AuditTrail events={auditTrail} />
+                            </div>
+                        </>
+                    ) : (
+                        // REQUEST PASSAGE TAB: Show booking form
+                        <>
+                            <div className="flex items-start justify-between mb-7">
+                                <div>
+                                    <div className="font-barlow font-black text-2xl uppercase tracking-wider text-traffic-white">
+                                        Request Passage
+                                    </div>
+                                    <div className="font-mono text-xs text-traffic-text-3 uppercase tracking-widest mt-1.5">
+                                        // Book a journey across regional networks
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                <BookingJourneyForm />
+                                {currentBooking && (
+                                    <BookingStatus booking={currentBooking} />
+                                )}
+                            </div>
+                        </>
+                    )}
                 </div>
             ) : (
-                // Admin: Show permits and audit trail side by side
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                    <ActivePermits permits={permits} onPermitClick={onPermitClick} />
-                    <AuditTrail events={auditTrail} />
-                </div>
+                // ADMIN VIEW - Authority Dashboard
+                <AuthorityDashboard />
             )}
-
-            {/* Journey Request Form - Admin only */}
-            {isAdmin && <JourneyRequest request={currentRequest} />}
         </div>
     );
 }
