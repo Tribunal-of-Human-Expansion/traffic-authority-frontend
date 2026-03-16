@@ -153,7 +153,7 @@ export const bookingApiService = {
             destination: 'Paris',
             departureTime: new Date().toISOString(),
             arrivalTime: new Date(Date.now() + 2 * 3600000).toISOString(),
-            segments: [mockSegments['SEG-EU-WEST-001']],
+            segments: [mockSegments['SEG-UK-M1-001']],
             state: 'CONFIRMED',
             createdAt: new Date().toISOString(),
             verificationToken: 'TOKEN-ABC123XYZ',
