@@ -134,7 +134,7 @@ export function RoadClosureManager() {
                         </label>
                         <select
                             value={severity}
-                            onChange={(e) => setSeverity(e.target.value as any)}
+                            onChange={(e) => setSeverity(e.target.value as RoadClosure['severity'])}
                             className="w-full bg-traffic-bg border border-traffic-accent text-traffic-text px-3 py-2 font-mono text-sm"
                         >
                             <option value="critical">Critical</option>
