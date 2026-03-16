@@ -106,7 +106,7 @@ export function CapacityOverridePanel() {
                             min="1"
                             max={originalCapacity * 2}
                             value={overrideCapacity}
-                            onChange={(e) => setOverrideCapacity(parseInt(e.target.value))}
+                            onChange={(e) => setOverrideCapacity(parseInt(e.target.value, 10) || 0)}
                             className="w-full bg-traffic-bg border border-traffic-accent text-traffic-text px-3 py-2 font-mono text-sm"
                         />
                         <p className="text-xs text-traffic-text-3 mt-2">
