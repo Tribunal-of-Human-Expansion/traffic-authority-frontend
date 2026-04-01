@@ -1,29 +1,6 @@
-import { useEffect } from 'react';
-import { usePermitStore } from '../store/permits';
-import { useSystemStore } from '../store/system';
-import type { } from '../types/index';
-import {
-    mockPermits,
-    mockHealthCheckpoints,
-    mockRegionalCapacity,
-    mockCongestedCorridors,
-    mockAuditTrail,
-} from '../utils/mockData';
-
+// Deprecated: mock data seeding has been removed in favour of real API-backed flows.
+// This hook is kept only to avoid breaking imports during the migration period.
 export function useMockData() {
-    const { setPermits, setAuditTrail } = usePermitStore();
-    const {
-        setHealthCheckpoints,
-        setRegionalCapacity,
-        setCongestedCorridors,
-    } = useSystemStore();
-
-    useEffect(() => {
-        // Simulate API calls
-        setPermits(mockPermits);
-        setAuditTrail(mockAuditTrail);
-        setHealthCheckpoints(mockHealthCheckpoints);
-        setRegionalCapacity(mockRegionalCapacity);
-        setCongestedCorridors(mockCongestedCorridors);
-    }, []);
+  return;
 }
+

@@ -1,58 +1,55 @@
 import { create } from 'zustand';
+import { httpClient } from '../services/httpClient';
 
 export type UserRole = 'admin' | 'civilian';
 
 interface AuthState {
-    isLoggedIn: boolean;
-    userRole: UserRole | null;
-    username: string | null;
-    login: (username: string, password: string) => Promise<void>;
-    logout: () => void;
-    setRole: (role: UserRole) => void;
-    toggleTestRole: () => void; // For development/testing
+  isLoggedIn: boolean;
+  userRole: UserRole | null;
+  username: string | null;
+  token: string | null;
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => void;
+  setRole: (role: UserRole) => void;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
-    isLoggedIn: false,
-    userRole: null,
-    username: null,
+interface LoginResponse {
+  token: string;
+  username: string;
+  role: UserRole;
+}
 
-    login: async (username: string, password: string) => {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 500));
+export const useAuthStore = create<AuthState>((set) => ({
+  isLoggedIn: false,
+  userRole: null,
+  username: null,
+  token: null,
 
-        // Simple test credentials
-        let role: UserRole = 'civilian';
-        if (username === 'admin' && password === 'admin123') {
-            role = 'admin';
-        } else if (username === 'civilian' && password === 'civic123') {
-            role = 'civilian';
-        } else {
-            throw new Error('Invalid credentials');
-        }
+  login: async (username: string, password: string) => {
+    const result = await httpClient.post<LoginResponse>('/users/login', {
+      username,
+      password,
+    });
 
-        set({
-            isLoggedIn: true,
-            userRole: role,
-            username,
-        });
-    },
+    set({
+      isLoggedIn: true,
+      userRole: result.role,
+      username: result.username,
+      token: result.token,
+    });
+  },
 
-    logout: () => {
-        set({
-            isLoggedIn: false,
-            userRole: null,
-            username: null,
-        });
-    },
+  logout: () => {
+    set({
+      isLoggedIn: false,
+      userRole: null,
+      username: null,
+      token: null,
+    });
+  },
 
-    setRole: (role: UserRole) => {
-        set({ userRole: role });
-    },
-
-    toggleTestRole: () => {
-        const current = get().userRole;
-        const newRole = current === 'admin' ? 'civilian' : 'admin';
-        set({ userRole: newRole });
-    },
+  setRole: (role: UserRole) => {
+    set({ userRole: role });
+  },
 }));
+
