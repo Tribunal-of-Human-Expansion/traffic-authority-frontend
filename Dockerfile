@@ -12,10 +12,12 @@ RUN --mount=type=cache,target=/root/.npm \
 
 COPY . .
 
-# Inject environment at build time via ARG/ENV
+# Inject API base at build time (Vite inlines these). Same-origin Ingress: /api
 ARG VITE_API_BASE_URL
+ARG VITE_API_BASE
 ARG VITE_REGION
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_API_BASE=${VITE_API_BASE}
 ENV VITE_REGION=${VITE_REGION}
 
 RUN npm run build
