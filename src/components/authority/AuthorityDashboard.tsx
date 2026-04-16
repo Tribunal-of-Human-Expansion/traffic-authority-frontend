@@ -2,11 +2,40 @@ import { RoadClosureManager } from './RoadClosureManager';
 import { CapacityOverridePanel } from './CapacityOverridePanel';
 import { BookingVerificationTool } from './BookingVerificationTool';
 import { useAuthorityStore } from '../../store/authority';
+import { useState } from 'react';
+import { authorityApiService } from '../../services/authorityApi';
+import type { SegmentForecastResponse, AuthorityAuditEntry } from '../../types/authority';
 
 export function AuthorityDashboard() {
     const { closures, overrides, restrictions } = useAuthorityStore();
+    const [segmentId, setSegmentId] = useState('SEG-UK-M1-001');
+    const [forecast, setForecast] = useState<SegmentForecastResponse | null>(null);
+    const [segmentAudit, setSegmentAudit] = useState<AuthorityAuditEntry[]>([]);
+    const [insightError, setInsightError] = useState<string | null>(null);
 
     const totalImpact = closures.length + overrides.length + restrictions.length;
+
+    const handleLoadForecast = async () => {
+        try {
+            setInsightError(null);
+            const response = await authorityApiService.getSegmentForecast(segmentId);
+            setForecast(response);
+        } catch (err) {
+            setInsightError(
+                err instanceof Error ? err.message : 'Failed to load forecast'
+            );
+        }
+    };
+
+    const handleLoadSegmentAudit = async () => {
+        try {
+            setInsightError(null);
+            const response = await authorityApiService.getSegmentAudit(segmentId);
+            setSegmentAudit(response);
+        } catch (err) {
+            setInsightError(err instanceof Error ? err.message : 'Failed to load audit');
+        }
+    };
 
     return (
         <div className="bg-traffic-bg-2 px-8 py-7">
@@ -75,6 +104,62 @@ export function AuthorityDashboard() {
             {/* Full-Width Verification Tool */}
             <div className="mb-8">
                 <BookingVerificationTool />
+            </div>
+
+            <div className="mb-8 bg-traffic-panel border border-traffic-border p-6">
+                <h2 className="font-barlow font-bold text-lg uppercase tracking-wider text-traffic-white mb-4">
+                    Segment Forecast & Audit
+                </h2>
+                <div className="flex gap-3 mb-4">
+                    <input
+                        value={segmentId}
+                        onChange={(e) => setSegmentId(e.target.value)}
+                        className="flex-1 bg-traffic-bg border border-traffic-accent text-traffic-text px-3 py-2 font-mono text-sm"
+                        placeholder="Segment ID"
+                    />
+                    <button
+                        onClick={handleLoadForecast}
+                        className="px-3 py-2 text-xs border border-traffic-accent text-traffic-accent font-mono uppercase"
+                    >
+                        Load Forecast
+                    </button>
+                    <button
+                        onClick={handleLoadSegmentAudit}
+                        className="px-3 py-2 text-xs border border-traffic-accent text-traffic-accent font-mono uppercase"
+                    >
+                        Load Audit
+                    </button>
+                </div>
+                {insightError && (
+                    <p className="font-mono text-xs text-traffic-red mb-3">{insightError}</p>
+                )}
+                {forecast && (
+                    <div className="font-mono text-xs text-traffic-text-2 mb-4 space-y-1">
+                        <p>Map version: {forecast.mapVersion}</p>
+                        <p>Baseline: {forecast.baselineCapacity}</p>
+                        <p>Confirmed: {forecast.confirmedBookings}</p>
+                        <p>
+                            Utilization: {(forecast.utilizationRatio * 100).toFixed(1)}%
+                        </p>
+                    </div>
+                )}
+                {segmentAudit.length > 0 && (
+                    <div className="space-y-2">
+                        {segmentAudit.slice(0, 5).map((entry) => (
+                            <div
+                                key={entry.id}
+                                className="bg-traffic-bg border border-traffic-border p-2"
+                            >
+                                <p className="font-mono text-xs text-traffic-accent">
+                                    {entry.instructionType} / {entry.status}
+                                </p>
+                                <p className="font-mono text-xs text-traffic-text-3">
+                                    {new Date(entry.createdAt).toLocaleString()}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Authority Information Footer */}

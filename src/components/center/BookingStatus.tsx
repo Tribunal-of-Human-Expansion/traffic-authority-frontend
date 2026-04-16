@@ -1,7 +1,9 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import type { Booking, RouteSegment } from '../../store/booking';
 import { useBookingStore } from '../../store/booking';
 import { bookingApiService } from '../../services/bookingApi';
+import { auditApiService } from '../../services/auditApi';
+import type { AuditRecord } from '../../types/audit';
 import { Button } from '../common/Button';
 
 interface BookingStatusProps {
@@ -10,7 +12,9 @@ interface BookingStatusProps {
 }
 
 export function BookingStatus({ booking, onCancel }: BookingStatusProps) {
-    const { cancelBooking, setLoading, setError } = useBookingStore();
+    const { cancelBooking, setLoading, setError, setCurrentBooking } = useBookingStore();
+    const [verifyState, setVerifyState] = useState<string | null>(null);
+    const [auditRecords, setAuditRecords] = useState<AuditRecord[]>([]);
 
     const stateColors: Record<string, string> = {
         PENDING: 'text-traffic-amber border-traffic-amber',
@@ -44,6 +48,51 @@ export function BookingStatus({ booking, onCancel }: BookingStatusProps) {
             onCancel?.();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Cancellation failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRefresh = async () => {
+        try {
+            setLoading(true);
+            const refreshed = await bookingApiService.getBooking(booking.id);
+            setCurrentBooking(refreshed);
+            setVerifyState('Booking refreshed from service');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Refresh failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerify = async () => {
+        if (!booking.verificationToken) {
+            setVerifyState('No token available for this booking');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const valid = await bookingApiService.verifyBooking(
+                booking.id,
+                booking.verificationToken
+            );
+            setVerifyState(valid ? 'Verification passed' : 'Verification failed');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Verification failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleLoadAudit = async () => {
+        try {
+            setLoading(true);
+            const records = await auditApiService.getBookingAudit(booking.id);
+            setAuditRecords(records);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to load audit trail');
         } finally {
             setLoading(false);
         }
@@ -173,6 +222,15 @@ export function BookingStatus({ booking, onCancel }: BookingStatusProps) {
             {/* Actions */}
             {booking.state === 'CONFIRMED' && (
                 <div className="space-y-3">
+                    <Button onClick={handleRefresh} className="w-full">
+                        Refresh Booking
+                    </Button>
+                    <Button onClick={handleVerify} className="w-full">
+                        Verify Token
+                    </Button>
+                    <Button onClick={handleLoadAudit} className="w-full">
+                        Load Booking Audit
+                    </Button>
                     {isCancellable && (
                         <Button
                             onClick={handleCancel}
@@ -187,6 +245,33 @@ export function BookingStatus({ booking, onCancel }: BookingStatusProps) {
                             Cancellation no longer available (within 24 hours of departure)
                         </p>
                     )}
+                </div>
+            )}
+
+            {verifyState && (
+                <p className="mt-4 text-xs font-mono text-traffic-text-2">{verifyState}</p>
+            )}
+
+            {auditRecords.length > 0 && (
+                <div className="mt-4 border-t border-traffic-border pt-4 space-y-2">
+                    <p className="font-mono text-xs text-traffic-text-3 uppercase">
+                        Audit Events
+                    </p>
+                    {auditRecords.slice(0, 5).map((record) => (
+                        <div
+                            key={record.id}
+                            className="bg-traffic-bg border border-traffic-border p-2"
+                        >
+                            <p className="font-mono text-xs text-traffic-accent">
+                                {record.eventType}
+                            </p>
+                            <p className="font-mono text-xs text-traffic-text-3">
+                                {record.createdAt
+                                    ? new Date(record.createdAt).toLocaleString()
+                                    : 'No timestamp'}
+                            </p>
+                        </div>
+                    ))}
                 </div>
             )}
 

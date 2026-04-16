@@ -40,6 +40,8 @@ interface AuthorityStore {
     overrides: CapacityOverride[];
     restrictions: SegmentRestriction[];
     isLoading: boolean;
+    isPolicyUpdateInFlight: boolean;
+    lastPolicyApplyAt: string | null;
     error: string | null;
 
     // Closures
@@ -56,6 +58,8 @@ interface AuthorityStore {
 
     // State management
     setLoading: (loading: boolean) => void;
+    setPolicyUpdateInFlight: (inFlight: boolean) => void;
+    setLastPolicyApplyAt: (timestamp: string | null) => void;
     setError: (error: string | null) => void;
     clearError: () => void;
 }
@@ -65,6 +69,8 @@ export const useAuthorityStore = create<AuthorityStore>((set) => ({
     overrides: [],
     restrictions: [],
     isLoading: false,
+    isPolicyUpdateInFlight: false,
+    lastPolicyApplyAt: null,
     error: null,
 
     addClosure: (closure) =>
@@ -98,6 +104,10 @@ export const useAuthorityStore = create<AuthorityStore>((set) => ({
         })),
 
     setLoading: (loading) => set({ isLoading: loading }),
+
+    setPolicyUpdateInFlight: (inFlight) => set({ isPolicyUpdateInFlight: inFlight }),
+
+    setLastPolicyApplyAt: (timestamp) => set({ lastPolicyApplyAt: timestamp }),
 
     setError: (error) => set({ error }),
 

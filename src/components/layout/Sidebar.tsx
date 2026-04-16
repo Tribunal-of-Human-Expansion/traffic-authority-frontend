@@ -18,12 +18,14 @@ export function Sidebar({ healthCheckpoints }: SidebarProps) {
         { key: 'my-permits' as const, label: 'My Permits' },
         { key: 'traffic-map' as const, label: 'Traffic Map' },
         { key: 'enforcement' as const, label: 'Enforcement' },
+        { key: 'profile-notifications' as const, label: 'Profile & Alerts' },
     ];
 
     const civilianNavItems = [
         { key: 'my-permits' as const, label: 'My Permits' },
         { key: 'request-passage' as const, label: 'Request Passage' },
         { key: 'traffic-map' as const, label: 'Traffic Map' },
+        { key: 'profile-notifications' as const, label: 'Profile & Alerts' },
     ];
 
     const navItems = isAdmin ? adminNavItems : civilianNavItems;

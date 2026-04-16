@@ -6,6 +6,9 @@ export const LoginModal = () => {
     const { login } = useAuth();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [jwtToken, setJwtToken] = useState(
+        () => localStorage.getItem('gtbs_demo_jwt') || ''
+    );
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -15,7 +18,8 @@ export const LoginModal = () => {
         setIsLoading(true);
 
         try {
-            await login(username, password);
+            localStorage.setItem('gtbs_demo_jwt', jwtToken);
+            await login(username, password, jwtToken);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Login failed');
         } finally {
@@ -53,6 +57,20 @@ export const LoginModal = () => {
                         />
                     </div>
 
+                    <div>
+                        <label className="block text-traffic-text text-sm mb-2">
+                            Gateway JWT (for protected routes)
+                        </label>
+                        <textarea
+                            value={jwtToken}
+                            onChange={(e) => setJwtToken(e.target.value)}
+                            className="w-full bg-traffic-bg border border-traffic-accent text-traffic-text px-3 py-2 focus:outline-none focus:border-traffic-bright font-mono text-xs"
+                            placeholder="Paste DEMO_JWT from local/set-demo-jwt.sh"
+                            rows={3}
+                            disabled={isLoading}
+                        />
+                    </div>
+
                     {error && <p className="text-red-400 text-sm">{error}</p>}
 
                     <Button
@@ -69,6 +87,9 @@ export const LoginModal = () => {
                     <p className="mb-2">Test Credentials:</p>
                     <p>Admin: admin / admin123</p>
                     <p>Civilian: civilian / civic123</p>
+                    <p className="mt-2">
+                        Generate JWT: ./local/set-demo-jwt.sh --raw demo-user 3600
+                    </p>
                 </div>
             </div>
         </div>

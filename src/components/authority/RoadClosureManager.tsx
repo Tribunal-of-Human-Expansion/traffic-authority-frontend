@@ -1,10 +1,19 @@
 import { useState } from 'react';
 import type { RoadClosure } from '../../store/authority';
 import { useAuthorityStore } from '../../store/authority';
+import { authorityApiService } from '../../services/authorityApi';
 import { Button } from '../common/Button';
 
 export function RoadClosureManager() {
-    const { closures, addClosure, removeClosure } = useAuthorityStore();
+    const {
+        closures,
+        addClosure,
+        removeClosure,
+        setPolicyUpdateInFlight,
+        setLastPolicyApplyAt,
+        setError,
+        error,
+    } = useAuthorityStore();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [segmentId, setSegmentId] = useState('SEG-UK-M1-001');
     const [reason, setReason] = useState('Maintenance');
@@ -24,7 +33,7 @@ export function RoadClosureManager() {
         { id: 'SEG-US-I95-001', name: 'Interstate 95 - Northeast Corridor' },
     ];
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const segment = segmentOptions.find((s) => s.id === segmentId);
@@ -42,8 +51,26 @@ export function RoadClosureManager() {
             createdAt: new Date().toISOString(),
         };
 
-        addClosure(closure);
-        setIsFormOpen(false);
+        try {
+            setPolicyUpdateInFlight(true);
+            setError(null);
+            await authorityApiService.createClosure({
+                correlationId: `closure-${Date.now()}`,
+                jurisdictionId: 'UK-NORTH',
+                segmentIds: [segmentId],
+                effectiveFrom: new Date(startTime).toISOString(),
+                effectiveUntil: new Date(endTime).toISOString(),
+                reason,
+                incidentReference: `INC-${Date.now()}`,
+            });
+            addClosure(closure);
+            setLastPolicyApplyAt(new Date().toISOString());
+            setIsFormOpen(false);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to apply closure');
+        } finally {
+            setPolicyUpdateInFlight(false);
+        }
     };
 
     const severityColors = {
@@ -160,6 +187,11 @@ export function RoadClosureManager() {
             )}
 
             {/* Active Closures */}
+            {error && (
+                <div className="mb-4 bg-traffic-red/10 border border-traffic-red p-3 font-mono text-xs text-traffic-red">
+                    {error}
+                </div>
+            )}
             {closures.length > 0 ? (
                 <div className="space-y-3">
                     {closures.map((closure: RoadClosure) => (

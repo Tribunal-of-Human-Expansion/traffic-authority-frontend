@@ -6,7 +6,9 @@ interface AuthState {
     isLoggedIn: boolean;
     userRole: UserRole | null;
     username: string | null;
-    login: (username: string, password: string) => Promise<void>;
+    userId: string | null;
+    token: string | null;
+    login: (username: string, password: string, jwtToken?: string) => Promise<void>;
     logout: () => void;
     setRole: (role: UserRole) => void;
     toggleTestRole: () => void; // For development/testing
@@ -16,8 +18,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     isLoggedIn: false,
     userRole: null,
     username: null,
+    userId: null,
+    token: null,
 
-    login: async (username: string, password: string) => {
+    login: async (username: string, password: string, jwtToken?: string) => {
         // Simulate API call
         await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -31,10 +35,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             throw new Error('Invalid credentials');
         }
 
+        const envToken = import.meta.env.VITE_DEMO_JWT as string | undefined;
+        const resolvedToken = jwtToken?.trim() || envToken || null;
+
         set({
             isLoggedIn: true,
             userRole: role,
             username,
+            userId: username,
+            token: resolvedToken,
         });
     },
 
@@ -43,6 +52,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             isLoggedIn: false,
             userRole: null,
             username: null,
+            userId: null,
+            token: null,
         });
     },
 

@@ -1,7 +1,38 @@
 import { useAuth } from '../../context/AuthContext';
+import { useEffect, useState } from 'react';
 
 export function Topbar() {
     const auth = useAuth();
+    const [gatewayHealth, setGatewayHealth] = useState<'up' | 'down' | 'checking'>(
+        'checking'
+    );
+    const [lastChecked, setLastChecked] = useState<string>('');
+
+    useEffect(() => {
+        const base = import.meta.env.VITE_GATEWAY_BASE_URL || '';
+        let isMounted = true;
+
+        const checkHealth = async () => {
+            try {
+                const response = await fetch(`${base}/health`);
+                if (!isMounted) return;
+                setGatewayHealth(response.ok ? 'up' : 'down');
+                setLastChecked(new Date().toLocaleTimeString());
+            } catch {
+                if (!isMounted) return;
+                setGatewayHealth('down');
+                setLastChecked(new Date().toLocaleTimeString());
+            }
+        };
+
+        void checkHealth();
+        const interval = setInterval(checkHealth, 20000);
+
+        return () => {
+            isMounted = false;
+            clearInterval(interval);
+        };
+    }, []);
 
     return (
         <div className="flex items-center justify-between px-8 h-[52px] bg-traffic-panel border-b border-traffic-border relative overflow-hidden">
@@ -29,8 +60,27 @@ export function Topbar() {
             </div>
 
             {/* Center Status */}
-            <div className="font-mono text-xs text-traffic-amber uppercase tracking-wide animate-blink">
-                ● PEAK-HOUR RESTRICTIONS ACTIVE — EU-WEST / NA-EAST ●
+            <div className="font-mono text-xs uppercase tracking-wide">
+                <span className="text-traffic-amber animate-blink mr-4">
+                    ● PEAK-HOUR RESTRICTIONS ACTIVE — EU-WEST / NA-EAST ●
+                </span>
+                <span
+                    className={
+                        gatewayHealth === 'up'
+                            ? 'text-traffic-green'
+                            : gatewayHealth === 'down'
+                                ? 'text-traffic-red'
+                                : 'text-traffic-text-2'
+                    }
+                >
+                    GW:{' '}
+                    {gatewayHealth === 'checking'
+                        ? 'CHECKING'
+                        : gatewayHealth.toUpperCase()}
+                </span>
+                {lastChecked && (
+                    <span className="text-traffic-text-3 ml-2">[{lastChecked}]</span>
+                )}
             </div>
 
             {/* Right Section */}

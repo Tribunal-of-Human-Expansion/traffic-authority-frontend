@@ -1,10 +1,19 @@
 import { useState } from 'react';
 import type { CapacityOverride } from '../../store/authority';
 import { useAuthorityStore } from '../../store/authority';
+import { authorityApiService } from '../../services/authorityApi';
 import { Button } from '../common/Button';
 
 export function CapacityOverridePanel() {
-    const { overrides, addOverride, removeOverride } = useAuthorityStore();
+    const {
+        overrides,
+        addOverride,
+        removeOverride,
+        setPolicyUpdateInFlight,
+        setLastPolicyApplyAt,
+        setError,
+        error,
+    } = useAuthorityStore();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [segmentId, setSegmentId] = useState('SEG-UK-M1-001');
     const [overrideCapacity, setOverrideCapacity] = useState(150);
@@ -27,7 +36,7 @@ export function CapacityOverridePanel() {
     const currentSegment = segmentOptions.find((s) => s.id === segmentId);
     const originalCapacity = currentSegment?.capacity || 200;
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const segment = segmentOptions.find((s) => s.id === segmentId);
@@ -46,8 +55,28 @@ export function CapacityOverridePanel() {
             createdAt: new Date().toISOString(),
         };
 
-        addOverride(override);
-        setIsFormOpen(false);
+        try {
+            setPolicyUpdateInFlight(true);
+            setError(null);
+            await authorityApiService.createCapacityOverride({
+                correlationId: `capacity-${Date.now()}`,
+                jurisdictionId: 'UK-NORTH',
+                segmentIds: [segmentId],
+                effectiveFrom: new Date(effectiveFrom).toISOString(),
+                effectiveUntil: new Date(effectiveUntil).toISOString(),
+                capacityLimit: overrideCapacity,
+                reason,
+            });
+            addOverride(override);
+            setLastPolicyApplyAt(new Date().toISOString());
+            setIsFormOpen(false);
+        } catch (err) {
+            setError(
+                err instanceof Error ? err.message : 'Failed to apply capacity override'
+            );
+        } finally {
+            setPolicyUpdateInFlight(false);
+        }
     };
 
     const getCapacityTrend = (original: number, override: number) => {
@@ -168,6 +197,11 @@ export function CapacityOverridePanel() {
             )}
 
             {/* Active Overrides */}
+            {error && (
+                <div className="mb-4 bg-traffic-red/10 border border-traffic-red p-3 font-mono text-xs text-traffic-red">
+                    {error}
+                </div>
+            )}
             {overrides.length > 0 ? (
                 <div className="space-y-3">
                     {overrides.map((override: CapacityOverride) => {
