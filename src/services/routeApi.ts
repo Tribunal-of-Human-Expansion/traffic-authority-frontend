@@ -6,10 +6,14 @@ import type {
     RouteSegment,
 } from '../types/route';
 
+const API_BASE =
+    import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_BASE || '/api';
+
 const ROUTE_BASE =
     import.meta.env.VITE_ROUTE_API_BASE_URL ||
+    API_BASE ||
     import.meta.env.VITE_GATEWAY_BASE_URL ||
-    '';
+    '/api';
 
 interface BackendRouteDecomposeResponse {
     map_version: string;

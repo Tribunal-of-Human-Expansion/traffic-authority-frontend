@@ -9,14 +9,15 @@ export function Topbar() {
     const [lastChecked, setLastChecked] = useState<string>('');
 
     useEffect(() => {
-        const base = import.meta.env.VITE_GATEWAY_BASE_URL || '';
+        const healthUrl =
+            `${import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_BASE || '/api'}/health`;
         let isMounted = true;
 
         const checkHealth = async () => {
             try {
-                const response = await fetch(`${base}/health`);
+                const response = await fetch(healthUrl, { cache: 'no-store' });
                 if (!isMounted) return;
-                setGatewayHealth(response.ok ? 'up' : 'down');
+                setGatewayHealth(response.ok || response.status === 401 ? 'up' : 'down');
                 setLastChecked(new Date().toLocaleTimeString());
             } catch {
                 if (!isMounted) return;

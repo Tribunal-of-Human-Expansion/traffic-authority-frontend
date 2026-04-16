@@ -9,10 +9,14 @@ import type {
     SegmentForecastResponse,
 } from '../types/authority';
 
+const API_BASE =
+    import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_BASE || '/api';
+
 const AUTHORITY_BASE =
     import.meta.env.VITE_AUTHORITY_API_BASE_URL ||
+    API_BASE ||
     import.meta.env.VITE_GATEWAY_BASE_URL ||
-    '';
+    '/api';
 
 export const authorityApiService = {
     createClosure(payload: AuthorityClosureRequest) {
