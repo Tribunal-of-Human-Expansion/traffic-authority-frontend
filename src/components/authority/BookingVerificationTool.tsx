@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useBookingStore } from '../../store/booking';
-import { bookingApiService } from '../../services/bookingApi';
+import { authorityApiService } from '../../services/authorityApi';
 import { Button } from '../common/Button';
 
 export function BookingVerificationTool() {
     const [bookingId, setBookingId] = useState('');
     const [verificationToken, setVerificationToken] = useState('');
     const [verificationResult, setVerificationResult] = useState<boolean | null>(null);
+    const [verificationMessage, setVerificationMessage] = useState<string>('');
     const [isVerifying, setIsVerifying] = useState(false);
 
     const handleVerify = async (e: React.FormEvent) => {
@@ -18,10 +18,21 @@ export function BookingVerificationTool() {
 
         setIsVerifying(true);
         try {
-            const result = await bookingApiService.verifyBooking(bookingId, verificationToken);
-            setVerificationResult(result);
+            const result = await authorityApiService.verifyBooking(bookingId);
+            const isValid =
+                verificationToken === result.proofReference ||
+                verificationToken === result.bookingId;
+            setVerificationResult(isValid);
+            setVerificationMessage(
+                isValid
+                    ? `Authority status: ${result.status} (map v${result.mapVersion})`
+                    : `Authority returned status ${result.status}. Token mismatch.`
+            );
         } catch (err) {
             setVerificationResult(false);
+            setVerificationMessage(
+                err instanceof Error ? err.message : 'Authority verification failed'
+            );
         } finally {
             setIsVerifying(false);
         }
@@ -151,6 +162,11 @@ export function BookingVerificationTool() {
                                     <li>Booking is still active</li>
                                 </ul>
                             </div>
+                        )}
+                        {verificationMessage && (
+                            <p className="font-mono text-xs text-traffic-text-3 mt-4">
+                                {verificationMessage}
+                            </p>
                         )}
                     </div>
                 </div>

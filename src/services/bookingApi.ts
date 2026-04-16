@@ -1,10 +1,6 @@
-import { useAuthStore } from '../store/auth';
 import type { Booking, BookingRequest, RouteSegment } from '../store/booking';
-
-const API_BASE =
-    import.meta.env.VITE_API_BASE_URL ||
-    import.meta.env.VITE_API_BASE ||
-    '/api';
+import { useAuthStore } from '../store/auth';
+import { httpClient } from './httpClient';
 
 interface BackendBookingResponse {
     booking_id: string;
@@ -24,30 +20,8 @@ interface BackendVerificationProof {
     segment_scope: string[];
 }
 
-interface BackendError {
-    error?: string;
-    message?: string;
-}
-
-async function parseJson<T>(response: Response): Promise<T> {
-    if (!response.ok) {
-        let errorMessage = `Request failed with status ${response.status}`;
-
-        try {
-            const errorBody = (await response.json()) as BackendError;
-            errorMessage = errorBody.error || errorBody.message || errorMessage;
-        } catch {
-            // Ignore JSON parse failures and fall back to generic HTTP message.
-        }
-
-        throw new Error(errorMessage);
-    }
-
-    return (await response.json()) as T;
-}
-
 function resolveUserId(): string {
-    return useAuthStore.getState().username || 'civilian-demo';
+    return useAuthStore.getState().userId || useAuthStore.getState().username || 'civilian-demo';
 }
 
 function makeIdempotencyKey(request: BookingRequest): string {
@@ -100,24 +74,25 @@ function toFrontendBooking(
 }
 
 async function fetchVerificationToken(bookingId: string): Promise<string | undefined> {
-    const response = await fetch(
-        `${API_BASE}/bookings/${encodeURIComponent(bookingId)}/verify`
+    const proof = await httpClient.get<BackendVerificationProof>(
+        `/bookings/${encodeURIComponent(bookingId)}/verify`,
+        {
+            auth: false,
+        }
     );
-    const proof = await parseJson<BackendVerificationProof>(response);
     return proof.proof_token;
 }
 
 export const bookingApiService = {
     async requestBooking(request: BookingRequest): Promise<Booking> {
-        const response = await fetch(`${API_BASE}/bookings`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(toBackendRequest(request)),
-        });
+        const booking = await httpClient.post<BackendBookingResponse>(
+            '/bookings',
+            toBackendRequest(request),
+            {
+                auth: false,
+            }
+        );
 
-        const booking = await parseJson<BackendBookingResponse>(response);
         const verificationToken =
             booking.state === 'CONFIRMED'
                 ? await fetchVerificationToken(booking.booking_id)
@@ -127,10 +102,12 @@ export const bookingApiService = {
     },
 
     async getBooking(bookingId: string): Promise<Booking> {
-        const response = await fetch(
-            `${API_BASE}/bookings/${encodeURIComponent(bookingId)}`
+        const booking = await httpClient.get<BackendBookingResponse>(
+            `/bookings/${encodeURIComponent(bookingId)}`,
+            {
+                auth: false,
+            }
         );
-        const booking = await parseJson<BackendBookingResponse>(response);
         const verificationToken =
             booking.state === 'CONFIRMED'
                 ? await fetchVerificationToken(booking.booking_id)
@@ -140,13 +117,13 @@ export const bookingApiService = {
     },
 
     async cancelBooking(bookingId: string): Promise<Booking> {
-        const response = await fetch(
-            `${API_BASE}/bookings/${encodeURIComponent(bookingId)}/cancel`,
+        const booking = await httpClient.post<BackendBookingResponse>(
+            `/bookings/${encodeURIComponent(bookingId)}/cancel`,
+            undefined,
             {
-                method: 'POST',
+                auth: false,
             }
         );
-        const booking = await parseJson<BackendBookingResponse>(response);
         return toFrontendBooking(booking);
     },
 
@@ -159,10 +136,12 @@ export const bookingApiService = {
     },
 
     async verifyBooking(bookingId: string, token: string): Promise<boolean> {
-        const response = await fetch(
-            `${API_BASE}/bookings/${encodeURIComponent(bookingId)}/verify`
+        const proof = await httpClient.get<BackendVerificationProof>(
+            `/bookings/${encodeURIComponent(bookingId)}/verify`,
+            {
+                auth: false,
+            }
         );
-        const proof = await parseJson<BackendVerificationProof>(response);
         return proof.proof_token === token;
     },
 };

@@ -2,7 +2,13 @@ import { create } from 'zustand';
 import type { FailureSimulatorState } from '../types/index';
 
 interface UIState {
-    activeNav: 'command-center' | 'request-passage' | 'my-permits' | 'traffic-map' | 'enforcement';
+    activeNav:
+    | 'command-center'
+    | 'request-passage'
+    | 'my-permits'
+    | 'traffic-map'
+    | 'enforcement'
+    | 'profile-notifications';
     failures: FailureSimulatorState;
     expandedPermitId: string | null;
     formStep: 1 | 2 | 3 | 4;

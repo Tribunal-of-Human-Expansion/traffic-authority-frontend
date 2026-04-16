@@ -3,7 +3,12 @@ import { ActivePermits } from './ActivePermits';
 import { AuditTrail } from './AuditTrail';
 import { BookingJourneyForm } from './BookingJourneyForm';
 import { BookingStatus } from './BookingStatus';
+import { RoutePreviewPanel } from './RoutePreviewPanel';
+import { TrafficMapPanel } from './TrafficMapPanel';
 import { AuthorityDashboard } from '../authority/AuthorityDashboard';
+import { UserProfilePanel } from '../profile/UserProfilePanel';
+import { UserPreferencesPanel } from '../profile/UserPreferencesPanel';
+import { NotificationTimeline } from '../profile/NotificationTimeline';
 import type { PermitItem, AuditTrailEvent, UserPermitRequest } from '../../types/index';
 import { useAuth } from '../../context/AuthContext';
 import { useBookingStore } from '../../store/booking';
@@ -52,6 +57,40 @@ export function Center({
                                 <AuditTrail events={auditTrail} />
                             </div>
                         </>
+                    ) : activeNav === 'profile-notifications' ? (
+                        <>
+                            <div className="flex items-start justify-between mb-7">
+                                <div>
+                                    <div className="font-barlow font-black text-2xl uppercase tracking-wider text-traffic-white">
+                                        Profile & Notifications
+                                    </div>
+                                    <div className="font-mono text-xs text-traffic-text-3 uppercase tracking-widest mt-1.5">
+                                        // Test user profile, preferences, and notification APIs
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-6">
+                                <div className="space-y-6">
+                                    <UserProfilePanel />
+                                    <UserPreferencesPanel />
+                                </div>
+                                <NotificationTimeline />
+                            </div>
+                        </>
+                    ) : activeNav === 'traffic-map' ? (
+                        <>
+                            <div className="flex items-start justify-between mb-7">
+                                <div>
+                                    <div className="font-barlow font-black text-2xl uppercase tracking-wider text-traffic-white">
+                                        Traffic Map
+                                    </div>
+                                    <div className="font-mono text-xs text-traffic-text-3 uppercase tracking-widest mt-1.5">
+                                        // Live segment and map version view from route service
+                                    </div>
+                                </div>
+                            </div>
+                            <TrafficMapPanel />
+                        </>
                     ) : (
                         // REQUEST PASSAGE TAB: Show booking form
                         <>
@@ -68,6 +107,7 @@ export function Center({
 
                             <div className="space-y-6">
                                 <BookingJourneyForm />
+                                <RoutePreviewPanel />
                                 {currentBooking && (
                                     <BookingStatus booking={currentBooking} />
                                 )}

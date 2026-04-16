@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import type { CompatibilityResponse } from '../types/compatibility';
+import type { RouteDecompositionResponse } from '../types/route';
 
 export type BookingState = 'PENDING' | 'RESERVED' | 'CONFIRMED' | 'REJECTED' | 'CANCELLED' | 'FAILED';
 
@@ -37,6 +39,8 @@ interface BookingStore {
     currentBooking: Booking | null;
     isLoading: boolean;
     error: string | null;
+    compatibilityResult: CompatibilityResponse | null;
+    routePreview: RouteDecompositionResponse | null;
 
     // Actions
     setCurrentBooking: (booking: Booking | null) => void;
@@ -44,6 +48,8 @@ interface BookingStore {
     updateBookingState: (bookingId: string, state: BookingState) => void;
     setError: (error: string | null) => void;
     setLoading: (loading: boolean) => void;
+    setCompatibilityResult: (result: CompatibilityResponse | null) => void;
+    setRoutePreview: (preview: RouteDecompositionResponse | null) => void;
     clearError: () => void;
     cancelBooking: (bookingId: string) => void;
 }
@@ -53,6 +59,8 @@ export const useBookingStore = create<BookingStore>((set) => ({
     currentBooking: null,
     isLoading: false,
     error: null,
+    compatibilityResult: null,
+    routePreview: null,
 
     setCurrentBooking: (booking) => set({ currentBooking: booking }),
 
@@ -76,6 +84,10 @@ export const useBookingStore = create<BookingStore>((set) => ({
     setError: (error) => set({ error }),
 
     setLoading: (loading) => set({ isLoading: loading }),
+
+    setCompatibilityResult: (result) => set({ compatibilityResult: result }),
+
+    setRoutePreview: (preview) => set({ routePreview: preview }),
 
     clearError: () => set({ error: null }),
 

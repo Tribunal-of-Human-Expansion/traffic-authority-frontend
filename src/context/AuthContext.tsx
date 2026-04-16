@@ -6,7 +6,8 @@ interface AuthContextType {
     isLoggedIn: boolean;
     userRole: UserRole | null;
     username: string | null;
-    login: (username: string, password: string) => Promise<void>;
+    userId: string | null;
+    login: (username: string, password: string, jwtToken?: string) => Promise<void>;
     logout: () => void;
     setRole: (role: UserRole) => void;
     toggleTestRole: () => void;
@@ -17,13 +18,23 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { isLoggedIn, userRole, username, login, logout, setRole, toggleTestRole } =
+    const {
+        isLoggedIn,
+        userRole,
+        username,
+        userId,
+        login,
+        logout,
+        setRole,
+        toggleTestRole,
+    } =
         useAuthStore();
 
     const value: AuthContextType = {
         isLoggedIn,
         userRole,
         username,
+        userId,
         login,
         logout,
         setRole,
