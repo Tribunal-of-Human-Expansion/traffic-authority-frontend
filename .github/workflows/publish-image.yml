@@ -33,6 +33,7 @@ jobs:
                   context: .
                   push: true
                   tags: ghcr.io/${{ env.IMAGE_NAME }}:latest
-                  #   build-args: |
-                  #       VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL }}
-                  #       VITE_REGION=${{ vars.VITE_REGION }}
+                  build-args: |
+                      VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL }}
+                      VITE_REGION=${{ vars.VITE_REGION }}
+                      VITE_DEMO_JWT=${{ secrets.VITE_DEMO_JWT }}

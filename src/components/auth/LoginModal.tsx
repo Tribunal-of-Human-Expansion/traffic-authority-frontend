@@ -6,8 +6,9 @@ export const LoginModal = () => {
     const { login } = useAuth();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const envToken = import.meta.env.VITE_DEMO_JWT as string | undefined;
     const [jwtToken, setJwtToken] = useState(
-        () => localStorage.getItem('gtbs_demo_jwt') || ''
+        () => envToken || localStorage.getItem('gtbs_demo_jwt') || ''
     );
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -59,15 +60,16 @@ export const LoginModal = () => {
 
                     <div>
                         <label className="block text-traffic-text text-sm mb-2">
-                            Gateway JWT (for protected routes)
+                            Gateway JWT {envToken && <span className="text-traffic-bright text-xs">(auto-loaded from env)</span>}
                         </label>
                         <textarea
                             value={jwtToken}
-                            onChange={(e) => setJwtToken(e.target.value)}
+                            onChange={(e) => !envToken && setJwtToken(e.target.value)}
                             className="w-full bg-traffic-bg border border-traffic-accent text-traffic-text px-3 py-2 focus:outline-none focus:border-traffic-bright font-mono text-xs"
-                            placeholder="Paste DEMO_JWT from local/set-demo-jwt.sh"
+                            placeholder={envToken ? "JWT loaded from environment variable" : "Paste DEMO_JWT from local/set-demo-jwt.sh"}
                             rows={3}
-                            disabled={isLoading}
+                            disabled={isLoading || !!envToken}
+                            readOnly={!!envToken}
                         />
                     </div>
 
