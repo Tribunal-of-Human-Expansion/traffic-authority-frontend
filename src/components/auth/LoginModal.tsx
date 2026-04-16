@@ -63,7 +63,7 @@ export const LoginModal = () => {
                             Gateway JWT {envToken && <span className="text-traffic-bright text-xs">(auto-loaded from env)</span>}
                         </label>
                         <textarea
-                            value={jwtToken}
+                            value={envToken ? '••••••••••••••••' : jwtToken}
                             onChange={(e) => !envToken && setJwtToken(e.target.value)}
                             className="w-full bg-traffic-bg border border-traffic-accent text-traffic-text px-3 py-2 focus:outline-none focus:border-traffic-bright font-mono text-xs"
                             placeholder={envToken ? "JWT loaded from environment variable" : "Paste DEMO_JWT from local/set-demo-jwt.sh"}
