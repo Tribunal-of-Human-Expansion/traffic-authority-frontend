@@ -75,10 +75,7 @@ function toFrontendBooking(
 
 async function fetchVerificationToken(bookingId: string): Promise<string | undefined> {
     const proof = await httpClient.get<BackendVerificationProof>(
-        `/bookings/${encodeURIComponent(bookingId)}/verify`,
-        {
-            auth: false,
-        }
+        `/bookings/${encodeURIComponent(bookingId)}/verify`
     );
     return proof.proof_token;
 }
@@ -87,10 +84,7 @@ export const bookingApiService = {
     async requestBooking(request: BookingRequest): Promise<Booking> {
         const booking = await httpClient.post<BackendBookingResponse>(
             '/bookings',
-            toBackendRequest(request),
-            {
-                auth: false,
-            }
+            toBackendRequest(request)
         );
 
         const verificationToken =
@@ -103,10 +97,7 @@ export const bookingApiService = {
 
     async getBooking(bookingId: string): Promise<Booking> {
         const booking = await httpClient.get<BackendBookingResponse>(
-            `/bookings/${encodeURIComponent(bookingId)}`,
-            {
-                auth: false,
-            }
+            `/bookings/${encodeURIComponent(bookingId)}`
         );
         const verificationToken =
             booking.state === 'CONFIRMED'
@@ -118,11 +109,7 @@ export const bookingApiService = {
 
     async cancelBooking(bookingId: string): Promise<Booking> {
         const booking = await httpClient.post<BackendBookingResponse>(
-            `/bookings/${encodeURIComponent(bookingId)}/cancel`,
-            undefined,
-            {
-                auth: false,
-            }
+            `/bookings/${encodeURIComponent(bookingId)}/cancel`
         );
         return toFrontendBooking(booking);
     },
@@ -137,10 +124,7 @@ export const bookingApiService = {
 
     async verifyBooking(bookingId: string, token: string): Promise<boolean> {
         const proof = await httpClient.get<BackendVerificationProof>(
-            `/bookings/${encodeURIComponent(bookingId)}/verify`,
-            {
-                auth: false,
-            }
+            `/bookings/${encodeURIComponent(bookingId)}/verify`
         );
         return proof.proof_token === token;
     },
